@@ -21,7 +21,17 @@ import {
   IngredientDetails
 } from '@components';
 
+import { useDispatch } from '../../services/store';
+import { fetchFeeds, fetchIngredients } from '../../services/shopSlice';
+import { useEffect } from 'react';
+
 const App = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchIngredients());
+    dispatch(fetchFeeds());
+  }, [dispatch]);
+
   const location = useLocation();
 
   const handleOnClose = () => {

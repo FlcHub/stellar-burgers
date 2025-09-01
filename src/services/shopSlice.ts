@@ -2,8 +2,27 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { getFeedsApi, getIngredientsApi } from '@api';
-import { TIngredient, TConstructorIngredient, TOrdersData } from '@utils-types';
+import { setCookie } from '../utils/cookie';
+
+import {
+  getFeedsApi,
+  getIngredientsApi,
+  getUserApi,
+  registerUserApi,
+  TRegisterData
+} from '@api';
+
+import {
+  TIngredient,
+  TConstructorIngredient,
+  TOrdersData,
+  TUser
+} from '@utils-types';
+
+type TIngredientAction = {
+  index: number;
+  moveDirection: number;
+};
 
 type TConstructorItems = {
   bun: TIngredient | null;
@@ -17,6 +36,7 @@ interface ShopState {
   isOdersDataLoading: boolean;
   constructorItems: TConstructorItems;
   orderRequest: boolean;
+  user: TUser | null;
 }
 
 const initialState: ShopState = {
@@ -32,7 +52,8 @@ const initialState: ShopState = {
     bun: null,
     ingredients: []
   },
-  orderRequest: false
+  orderRequest: false,
+  user: null
 };
 
 export const fetchIngredients = createAsyncThunk(
@@ -43,6 +64,21 @@ export const fetchIngredients = createAsyncThunk(
 export const fetchFeeds = createAsyncThunk('shop/getFeeds', async () =>
   getFeedsApi()
 );
+
+export const registerUserThunk = createAsyncThunk(
+  'users/registerUser',
+  async (data: TRegisterData) => registerUserApi(data)
+);
+
+export const getUserThunk = createAsyncThunk('users/getUser', async () =>
+  getUserApi()
+);
+
+const swap = (list: TConstructorIngredient[], ind1: number, ind2: number) => {
+  const temp = list[ind1];
+  list[ind1] = list[ind2];
+  list[ind2] = temp;
+};
 
 const shopSlice = createSlice({
   name: 'shop',
@@ -60,6 +96,19 @@ const shopSlice = createSlice({
         ...ingredient
       });
     },
+    moveIngredient(state, action: PayloadAction<TIngredientAction>) {
+      const items = state.constructorItems.ingredients;
+      const { index, moveDirection } = action.payload;
+      if (moveDirection < 0 && index > 0) swap(items, index, index - 1);
+      if (moveDirection > 0 && index < items.length - 1)
+        swap(items, index, index + 1);
+    },
+    deleteIngredient(state, action: PayloadAction<number>) {
+      state.constructorItems.ingredients =
+        state.constructorItems.ingredients.filter(
+          (el, index) => index !== action.payload
+        );
+    },
     makeOrder(state) {
       state.orderRequest = true; // должен вызываться асинхронный метод и этот параметр устанавливаться в экстра редЮсерах
     }
@@ -70,7 +119,8 @@ const shopSlice = createSlice({
     getConstructorItemsSelector: (state) => state.constructorItems,
     getIngredientsSelector: (state) => state.ingredients,
     getIsIngredientsLoadingSelector: (state) => state.isIngredientsLoading,
-    getIsOdersDataLoadingSelector: (state) => state.isOdersDataLoading
+    getIsOdersDataLoadingSelector: (state) => state.isOdersDataLoading,
+    getUserSelector: (state) => state.user
   },
   extraReducers: (builder) => {
     builder
@@ -95,6 +145,22 @@ const shopSlice = createSlice({
       .addCase(fetchFeeds.fulfilled, (state, action) => {
         state.isOdersDataLoading = false;
         state.ordersData = action.payload;
+      })
+      //registerUserThunk
+      .addCase(registerUserThunk.pending, (state) => {})
+      .addCase(registerUserThunk.rejected, (state) => {})
+      .addCase(registerUserThunk.fulfilled, (state, action) => {
+        setCookie('accessToken', action.payload.accessToken);
+        localStorage.setItem('refreshToken', action.payload.refreshToken);
+        state.user = action.payload.user;
+      })
+      //getUserThunk
+      .addCase(getUserThunk.pending, (state) => {})
+      .addCase(getUserThunk.rejected, (state) => {
+        state.user = null;
+      })
+      .addCase(getUserThunk.fulfilled, (state, action) => {
+        state.user = action.payload.user;
       });
   }
 });
@@ -105,8 +171,10 @@ export const {
   getOrdersDataSelector,
   getIsOdersDataLoadingSelector,
   getConstructorItemsSelector,
-  getOrderRequestSelector
+  getOrderRequestSelector,
+  getUserSelector
 } = shopSlice.selectors;
 
-export const { addIngredient, makeOrder } = shopSlice.actions;
+export const { addIngredient, moveIngredient, deleteIngredient } =
+  shopSlice.actions;
 export default shopSlice.reducer;

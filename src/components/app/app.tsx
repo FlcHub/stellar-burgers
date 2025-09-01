@@ -22,7 +22,11 @@ import {
 } from '@components';
 
 import { useDispatch } from '../../services/store';
-import { fetchFeeds, fetchIngredients } from '../../services/shopSlice';
+import {
+  fetchFeeds,
+  fetchIngredients,
+  getUserThunk
+} from '../../services/shopSlice';
 import { useEffect } from 'react';
 
 const App = () => {
@@ -30,6 +34,7 @@ const App = () => {
   useEffect(() => {
     dispatch(fetchIngredients());
     dispatch(fetchFeeds());
+    dispatch(getUserThunk());
   }, [dispatch]);
 
   const location = useLocation();

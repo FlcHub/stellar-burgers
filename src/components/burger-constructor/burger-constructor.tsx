@@ -4,14 +4,12 @@ import { BurgerConstructorUI } from '@ui';
 import { useSelector, useDispatch } from '../../services/store';
 import {
   getConstructorItemsSelector,
-  getOrderRequestSelector,
-  makeOrder
+  getOrderRequestSelector
 } from '../../services/shopSlice';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
 
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
   const constructorItems = useSelector(getConstructorItemsSelector);
   const orderRequest = useSelector(getOrderRequestSelector);
 
@@ -25,7 +23,7 @@ export const BurgerConstructor: FC = () => {
     // если есть булка, то начать оформлять заказ
     if (!constructorItems.bun) return;
 
-    dispatch(makeOrder());
+    // dispatch(makeOrder());
   };
   const closeOrderModal = () => {};
 

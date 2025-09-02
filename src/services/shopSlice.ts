@@ -8,7 +8,9 @@ import {
   getFeedsApi,
   getIngredientsApi,
   getUserApi,
+  loginUserApi,
   registerUserApi,
+  TLoginData,
   TRegisterData
 } from '@api';
 
@@ -68,6 +70,11 @@ export const fetchFeeds = createAsyncThunk('shop/getFeeds', async () =>
 export const registerUserThunk = createAsyncThunk(
   'users/registerUser',
   async (data: TRegisterData) => registerUserApi(data)
+);
+
+export const loginUserThunk = createAsyncThunk(
+  'users/loginUser',
+  async (data: TLoginData) => loginUserApi(data)
 );
 
 export const getUserThunk = createAsyncThunk('users/getUser', async () =>
@@ -150,6 +157,14 @@ const shopSlice = createSlice({
       .addCase(registerUserThunk.pending, (state) => {})
       .addCase(registerUserThunk.rejected, (state) => {})
       .addCase(registerUserThunk.fulfilled, (state, action) => {
+        setCookie('accessToken', action.payload.accessToken);
+        localStorage.setItem('refreshToken', action.payload.refreshToken);
+        state.user = action.payload.user;
+      })
+      //loginUserThunk
+      .addCase(loginUserThunk.pending, (state) => {})
+      .addCase(loginUserThunk.rejected, (state) => {})
+      .addCase(loginUserThunk.fulfilled, (state, action) => {
         setCookie('accessToken', action.payload.accessToken);
         localStorage.setItem('refreshToken', action.payload.refreshToken);
         state.user = action.payload.user;

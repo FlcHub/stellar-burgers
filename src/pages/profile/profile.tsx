@@ -1,12 +1,12 @@
-import { useSelector } from '../../services/store';
-import { getUserSelector } from '../../services/shopSlice';
+import { useSelector, useDispatch } from '../../services/store';
+import { getUserSelector, updateUserThunk } from '../../services/shopSlice';
 
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
   const user = useSelector(getUserSelector);
+  const dispatch = useDispatch();
 
   const [formValue, setFormValue] = useState({
     name: user?.name || '',
@@ -29,6 +29,14 @@ export const Profile: FC = () => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    const name = formValue.name;
+    const email = formValue.email;
+    const password: string | undefined =
+      formValue.password === '' ? undefined : formValue.password;
+
+    // отправить новые данные на сервер
+    dispatch(updateUserThunk({ email: email, name: name, password: password }));
   };
 
   const handleCancel = (e: SyntheticEvent) => {
@@ -56,6 +64,4 @@ export const Profile: FC = () => {
       handleInputChange={handleInputChange}
     />
   );
-
-  return null;
 };

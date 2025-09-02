@@ -4,26 +4,37 @@ import { BurgerConstructorUI } from '@ui';
 import { useSelector, useDispatch } from '../../services/store';
 import {
   getConstructorItemsSelector,
-  getOrderRequestSelector
+  getOrderRequestSelector,
+  getUserSelector,
+  orderBurger
 } from '../../services/shopSlice';
+import { useNavigate } from 'react-router-dom';
 
 export const BurgerConstructor: FC = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const constructorItems = useSelector(getConstructorItemsSelector);
   const orderRequest = useSelector(getOrderRequestSelector);
+  const user = useSelector(getUserSelector);
 
   const orderModalData = null;
 
   const onOrderClick = () => {
-    // проверить, залогинен ли пользователь (TODO)
-    const user = true;
-    if (!user) return; // перенаправить на страницу регистрации
+    // проверить, залогинен ли пользователь
+    console.log('user', user);
+    if (!user) {
+      // перенаправить на страницу регистрации
+      navigate('/login');
+    }
 
-    // если есть булка, то начать оформлять заказ
+    // если булки нет, то нет и бургера
     if (!constructorItems.bun) return;
 
-    // dispatch(makeOrder());
+    console.log('going to order');
+    const items: string[] = [constructorItems.bun._id];
+    items.push(...constructorItems.ingredients.map((el) => el._id));
+    dispatch(orderBurger(items));
   };
   const closeOrderModal = () => {};
 

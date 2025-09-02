@@ -21,22 +21,54 @@ import {
   IngredientDetails
 } from '@components';
 
-import { useDispatch } from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
 import {
   fetchFeeds,
   fetchIngredients,
-  getUserThunk
+  getUserThunk,
+  getIsLoginedSelector,
+  getUserOrders,
+  getIsOdersDataLoadingSelector,
+  getIsUserOdersLoadingSelector
 } from '../../services/shopSlice';
 import { useEffect } from 'react';
 
 const App = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(fetchIngredients());
-    dispatch(fetchFeeds());
     dispatch(getUserThunk());
   }, [dispatch]);
+
+  const isLogined = useSelector(getIsLoginedSelector);
+  const isOrdersLoading = useSelector(getIsOdersDataLoadingSelector);
+  const isUserLoading = useSelector(getIsUserOdersLoadingSelector);
+
+  useEffect(() => {
+    const tim = setInterval(() => {
+      if (!isOrdersLoading) {
+        dispatch(fetchFeeds());
+      }
+    }, 2000);
+
+    return () => {
+      clearInterval(tim);
+    };
+  }, [isOrdersLoading]);
+
+  useEffect(() => {
+    const tim = setInterval(() => {
+      if (isLogined && !isUserLoading) {
+        dispatch(getUserOrders());
+      }
+    }, 2000);
+
+    return () => {
+      clearInterval(tim);
+    };
+  }, [isLogined, isUserLoading]);
 
   const handleOnClose = () => {
     navigate(-1);
@@ -50,19 +82,17 @@ const App = () => {
         <Route path='*' element={<NotFound404 />} />
         <Route path='/' element={<Layout />}>
           <Route index element={<ConstructorPage />} />
-          <Route path='/feed' element={<Feed />} />
-          <Route path='/feed/:number' element={<OrderInfo />} />
-          <Route path='/ingredients/:id' element={<IngredientDetails />} />
+          <Route path='feed' element={<Feed />} />
+          <Route path='feed/:number' element={<OrderInfo />} />
+          <Route path='ingredients/:id' element={<IngredientDetails />} />
+          <Route path='login' element={<Login />} />
           <Route element={<ProtectedRoute />}>
-            <Route path='/profile/orders/:number' element={<OrderInfo />} />
-          </Route>
-          <Route element={<ProtectedRoute />}>
-            <Route path='login' element={<Login />} />
             <Route path='register' element={<Register />} />
             <Route path='forgot-password' element={<ForgotPassword />} />
             <Route path='reset-password' element={<ResetPassword />} />
             <Route path='profile' element={<Profile />} />
             <Route path='profile/orders' element={<ProfileOrders />} />
+            <Route path='profile/orders/:number' element={<OrderInfo />} />
           </Route>
         </Route>
       </Routes>

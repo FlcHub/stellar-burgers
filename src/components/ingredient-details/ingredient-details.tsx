@@ -6,7 +6,6 @@ import { getIngredientsSelector } from '../../services/shopSlice';
 import { useParams } from 'react-router-dom';
 
 export const IngredientDetails: FC = () => {
-  /** TODO: взять переменную из стора */
   const ingredients = useSelector(getIngredientsSelector);
   const id = useParams().id;
   const ingredientData = ingredients.find((el) => el._id === id);

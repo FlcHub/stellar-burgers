@@ -50,11 +50,13 @@ interface ShopState {
     ingredients: boolean;
     odersData: boolean;
     userOders: boolean;
+    user: boolean;
     login: boolean;
   };
   isLogined: boolean;
   constructorItems: TConstructorItems;
   user: TUser | null;
+  previousPath: string | null;
 }
 
 const initialState: ShopState = {
@@ -73,6 +75,7 @@ const initialState: ShopState = {
     ingredients: true,
     odersData: false,
     userOders: false,
+    user: true,
     login: false
   },
   isLogined: false,
@@ -80,7 +83,8 @@ const initialState: ShopState = {
     bun: null,
     ingredients: []
   },
-  user: null
+  user: null,
+  previousPath: null
 };
 
 export const fetchIngredients = createAsyncThunk(
@@ -162,6 +166,9 @@ const shopSlice = createSlice({
     clearUserOrder(state) {
       state.userNewOrder.request = false;
       state.userNewOrder.order = null;
+    },
+    setPreviousPath(state, action: PayloadAction<string | null>) {
+      state.previousPath = action.payload;
     }
   },
   selectors: {
@@ -172,7 +179,8 @@ const shopSlice = createSlice({
     getIngredientsSelector: (state) => state.ingredients,
     getOnLoadFlagsSelector: (state) => state.onLoad,
     getUserSelector: (state) => state.user,
-    getIsLoginedSelector: (state) => state.isLogined
+    getIsLoginedSelector: (state) => state.isLogined,
+    getPreviousLocationSelector: (state) => state.previousPath
   },
   extraReducers: (builder) => {
     builder
@@ -262,13 +270,17 @@ const shopSlice = createSlice({
         state.isLogined = true;
       })
       //getUserThunk
-      .addCase(getUserThunk.pending, (state) => {})
+      .addCase(getUserThunk.pending, (state) => {
+        state.onLoad.user = true;
+      })
       .addCase(getUserThunk.rejected, (state) => {
         state.user = null;
+        state.onLoad.user = false;
         state.isLogined = false;
       })
       .addCase(getUserThunk.fulfilled, (state, action) => {
         state.user = action.payload.user;
+        state.onLoad.user = false;
         state.isLogined = true;
       })
       //logoutThunk
@@ -291,13 +303,15 @@ export const {
   getConstructorItemsSelector,
   getOrderRequestSelector,
   getUserSelector,
-  getIsLoginedSelector
+  getIsLoginedSelector,
+  getPreviousLocationSelector
 } = shopSlice.selectors;
 
 export const {
   addIngredient,
   moveIngredient,
   deleteIngredient,
-  clearUserOrder
+  clearUserOrder,
+  setPreviousPath
 } = shopSlice.actions;
 export default shopSlice.reducer;

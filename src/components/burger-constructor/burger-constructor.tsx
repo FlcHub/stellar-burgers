@@ -3,6 +3,7 @@ import { TIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { useSelector, useDispatch } from '../../services/store';
 import {
+  clearUserOrder,
   getConstructorItemsSelector,
   getOrderRequestSelector,
   getUserSelector,
@@ -15,28 +16,26 @@ export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
 
   const constructorItems = useSelector(getConstructorItemsSelector);
-  const orderRequest = useSelector(getOrderRequestSelector);
+  const { request, order } = useSelector(getOrderRequestSelector);
   const user = useSelector(getUserSelector);
-
-  const orderModalData = null;
 
   const onOrderClick = () => {
     // проверить, залогинен ли пользователь
-    console.log('user', user);
     if (!user) {
       // перенаправить на страницу регистрации
       navigate('/login');
     }
 
-    // если булки нет, то нет и бургера
+    // нет булки - нет бургера
     if (!constructorItems.bun) return;
 
-    console.log('going to order');
     const items: string[] = [constructorItems.bun._id];
     items.push(...constructorItems.ingredients.map((el) => el._id));
     dispatch(orderBurger(items));
   };
-  const closeOrderModal = () => {};
+  const closeOrderModal = () => {
+    dispatch(clearUserOrder());
+  };
 
   const price = useMemo(
     () =>
@@ -51,9 +50,9 @@ export const BurgerConstructor: FC = () => {
   return (
     <BurgerConstructorUI
       price={price}
-      orderRequest={orderRequest}
+      orderRequest={request}
       constructorItems={constructorItems}
-      orderModalData={orderModalData}
+      orderModalData={order}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
     />

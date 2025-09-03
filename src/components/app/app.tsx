@@ -28,8 +28,7 @@ import {
   getUserThunk,
   getIsLoginedSelector,
   getUserOrders,
-  getIsOdersDataLoadingSelector,
-  getIsUserOdersLoadingSelector
+  getOnLoadFlagsSelector
 } from '../../services/shopSlice';
 import { useEffect } from 'react';
 
@@ -43,8 +42,8 @@ const App = () => {
   }, [dispatch]);
 
   const isLogined = useSelector(getIsLoginedSelector);
-  const isOrdersLoading = useSelector(getIsOdersDataLoadingSelector);
-  const isUserLoading = useSelector(getIsUserOdersLoadingSelector);
+  const isOrdersLoading = useSelector(getOnLoadFlagsSelector).odersData;
+  const isUserLoading = useSelector(getOnLoadFlagsSelector).userOders;
 
   useEffect(() => {
     const tim = setInterval(() => {
@@ -86,10 +85,10 @@ const App = () => {
           <Route path='feed/:number' element={<OrderInfo />} />
           <Route path='ingredients/:id' element={<IngredientDetails />} />
           <Route path='login' element={<Login />} />
+          <Route path='register' element={<Register />} />
+          <Route path='forgot-password' element={<ForgotPassword />} />
+          <Route path='reset-password' element={<ResetPassword />} />
           <Route element={<ProtectedRoute />}>
-            <Route path='register' element={<Register />} />
-            <Route path='forgot-password' element={<ForgotPassword />} />
-            <Route path='reset-password' element={<ResetPassword />} />
             <Route path='profile' element={<Profile />} />
             <Route path='profile/orders' element={<ProfileOrders />} />
             <Route path='profile/orders/:number' element={<OrderInfo />} />

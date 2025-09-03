@@ -1,5 +1,5 @@
 import { useSelector } from '../../services/store';
-import { getIsIngredientsLoadingSelector } from '../../services/shopSlice';
+import { getOnLoadFlagsSelector } from '../../services/shopSlice';
 
 import styles from './constructor-page.module.css';
 
@@ -9,7 +9,7 @@ import { Preloader } from '../../components/ui';
 import { FC } from 'react';
 
 export const ConstructorPage: FC = () => {
-  const isIngredientsLoading = useSelector(getIsIngredientsLoadingSelector);
+  const isIngredientsLoading = useSelector(getOnLoadFlagsSelector).ingredients;
   return (
     <>
       {isIngredientsLoading ? (

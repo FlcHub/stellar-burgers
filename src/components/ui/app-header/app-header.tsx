@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import clsx from 'clsx';
 import styles from './app-header.module.css';
 import { TAppHeaderUIProps } from './type';
 import {
@@ -7,7 +8,7 @@ import {
   Logo,
   ProfileIcon
 } from '@zlden/react-developer-burger-ui-components';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
   <header className={styles.header}>
@@ -16,13 +17,27 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
         <>
           <BurgerIcon type={'primary'} />
           <p className='text text_type_main-default ml-2 mr-10'>
-            <Link to='/'>Конструктор</Link>
+            <NavLink
+              className={({ isActive }) =>
+                clsx(styles.link, { [styles.link_active]: isActive })
+              }
+              to='/'
+            >
+              Конструктор
+            </NavLink>
           </p>
         </>
         <>
           <ListIcon type={'primary'} />
           <p className='text text_type_main-default ml-2'>
-            <Link to='/feed'>Лента заказов</Link>
+            <NavLink
+              className={({ isActive }) =>
+                clsx(styles.link, { [styles.link_active]: isActive })
+              }
+              to='/feed'
+            >
+              Лента заказов
+            </NavLink>
           </p>
         </>
       </div>
@@ -32,7 +47,14 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
       <div className={styles.link_position_last}>
         <ProfileIcon type={'primary'} />
         <p className='text text_type_main-default ml-2'>
-          <Link to='/profile'>{userName || 'Личный кабинет'}</Link>
+          <NavLink
+            className={({ isActive }) =>
+              clsx(styles.link, { [styles.link_active]: isActive })
+            }
+            to='/profile'
+          >
+            {userName || 'Личный кабинет'}
+          </NavLink>
         </p>
       </div>
     </nav>

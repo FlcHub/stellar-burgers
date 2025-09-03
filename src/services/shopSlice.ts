@@ -31,22 +31,29 @@ type TIngredientAction = {
   moveDirection: number;
 };
 
-type TConstructorItems = {
+export type TConstructorItems = {
   bun: TIngredient | null;
   ingredients: TConstructorIngredient[];
 };
 
+type TNewOrder = {
+  order: TOrder | null;
+  request: boolean;
+};
+
 interface ShopState {
+  userNewOrder: TNewOrder;
   userOrdersData: TOrder[];
   ordersData: TOrdersData;
   ingredients: TIngredient[];
-  isIngredientsLoading: boolean;
-  isOdersDataLoading: boolean;
-  isUserOdersLoading: boolean;
-  isLoginInProgress: boolean;
+  onLoad: {
+    ingredients: boolean;
+    odersData: boolean;
+    userOders: boolean;
+    login: boolean;
+  };
   isLogined: boolean;
   constructorItems: TConstructorItems;
-  orderRequest: boolean;
   user: TUser | null;
 }
 
@@ -56,18 +63,23 @@ const initialState: ShopState = {
     total: 0,
     totalToday: 0
   },
+  userNewOrder: {
+    order: null,
+    request: false
+  },
   userOrdersData: [],
   ingredients: [],
-  isIngredientsLoading: true,
-  isOdersDataLoading: false,
-  isUserOdersLoading: false,
-  isLoginInProgress: false,
+  onLoad: {
+    ingredients: true,
+    odersData: false,
+    userOders: false,
+    login: false
+  },
   isLogined: false,
   constructorItems: {
     bun: null,
     ingredients: []
   },
-  orderRequest: false,
   user: null
 };
 
@@ -146,97 +158,98 @@ const shopSlice = createSlice({
         state.constructorItems.ingredients.filter(
           (el, index) => index !== action.payload
         );
+    },
+    clearUserOrder(state) {
+      state.userNewOrder.request = false;
+      state.userNewOrder.order = null;
     }
   },
   selectors: {
     getUserOrdersDataSelector: (state) => state.userOrdersData,
     getOrdersDataSelector: (state) => state.ordersData,
-    getOrderRequestSelector: (state) => state.orderRequest,
+    getOrderRequestSelector: (state) => state.userNewOrder,
     getConstructorItemsSelector: (state) => state.constructorItems,
     getIngredientsSelector: (state) => state.ingredients,
-    getIsIngredientsLoadingSelector: (state) => state.isIngredientsLoading,
-    getIsOdersDataLoadingSelector: (state) => state.isOdersDataLoading,
-    getIsUserOdersLoadingSelector: (state) => state.isUserOdersLoading,
+    getOnLoadFlagsSelector: (state) => state.onLoad,
     getUserSelector: (state) => state.user,
-    getIsLoginInProgressSelector: (state) => state.isLoginInProgress,
     getIsLoginedSelector: (state) => state.isLogined
   },
   extraReducers: (builder) => {
     builder
       //fetchIngredients
       .addCase(fetchIngredients.pending, (state) => {
-        state.isIngredientsLoading = true;
+        state.onLoad.ingredients = true;
       })
       .addCase(fetchIngredients.rejected, (state) => {
-        state.isIngredientsLoading = false;
+        state.onLoad.ingredients = false;
       })
       .addCase(fetchIngredients.fulfilled, (state, action) => {
-        state.isIngredientsLoading = false;
+        state.onLoad.ingredients = false;
         state.ingredients = action.payload;
       })
       //fetchFeeds
       .addCase(fetchFeeds.pending, (state) => {
-        state.isOdersDataLoading = true;
+        state.onLoad.odersData = true;
       })
       .addCase(fetchFeeds.rejected, (state) => {
-        state.isOdersDataLoading = false;
+        state.onLoad.odersData = false;
       })
       .addCase(fetchFeeds.fulfilled, (state, action) => {
-        state.isOdersDataLoading = false;
+        state.onLoad.odersData = false;
         state.ordersData = action.payload;
       })
       //getUserOrders
       .addCase(getUserOrders.pending, (state) => {
-        state.isUserOdersLoading = true;
+        state.onLoad.userOders = true;
       })
       .addCase(getUserOrders.rejected, (state) => {
-        state.isUserOdersLoading = false;
+        state.onLoad.userOders = false;
         state.isLogined = false;
       })
       .addCase(getUserOrders.fulfilled, (state, action) => {
         state.userOrdersData = action.payload;
-        state.isUserOdersLoading = false;
+        state.onLoad.userOders = false;
       })
       //orderBurger
       .addCase(orderBurger.pending, (state) => {
-        state.orderRequest = true;
+        state.userNewOrder.request = true;
       })
       .addCase(orderBurger.rejected, (state) => {
-        state.orderRequest = false;
+        state.userNewOrder.request = false;
       })
       .addCase(orderBurger.fulfilled, (state, action) => {
-        console.log('ordered!');
-        state.orderRequest = false;
+        state.userNewOrder.request = false;
+        state.userNewOrder.order = action.payload.order;
       })
       //registerUserThunk
       .addCase(registerUserThunk.pending, (state) => {
-        state.isLoginInProgress = true;
+        state.onLoad.login = true;
       })
       .addCase(registerUserThunk.rejected, (state) => {
         state.isLogined = false;
-        state.isLoginInProgress = false;
+        state.onLoad.login = false;
       })
       .addCase(registerUserThunk.fulfilled, (state, action) => {
         setCookie('accessToken', action.payload.accessToken);
         localStorage.setItem('refreshToken', action.payload.refreshToken);
         state.user = action.payload.user;
         state.isLogined = true;
-        state.isLoginInProgress = false;
+        state.onLoad.login = false;
       })
       //loginUserThunk
       .addCase(loginUserThunk.pending, (state) => {
-        state.isLoginInProgress = true;
+        state.onLoad.login = true;
       })
       .addCase(loginUserThunk.rejected, (state) => {
         state.isLogined = false;
-        state.isLoginInProgress = false;
+        state.onLoad.login = false;
       })
       .addCase(loginUserThunk.fulfilled, (state, action) => {
         setCookie('accessToken', action.payload.accessToken);
         localStorage.setItem('refreshToken', action.payload.refreshToken);
         state.user = action.payload.user;
         state.isLogined = true;
-        state.isLoginInProgress = false;
+        state.onLoad.login = false;
       })
       //updateUserThunk
       .addCase(updateUserThunk.pending, (state) => {})
@@ -272,18 +285,19 @@ const shopSlice = createSlice({
 
 export const {
   getIngredientsSelector,
-  getIsIngredientsLoadingSelector,
+  getOnLoadFlagsSelector,
   getUserOrdersDataSelector,
   getOrdersDataSelector,
-  getIsOdersDataLoadingSelector,
-  getIsUserOdersLoadingSelector,
   getConstructorItemsSelector,
   getOrderRequestSelector,
   getUserSelector,
-  getIsLoginInProgressSelector,
   getIsLoginedSelector
 } = shopSlice.selectors;
 
-export const { addIngredient, moveIngredient, deleteIngredient } =
-  shopSlice.actions;
+export const {
+  addIngredient,
+  moveIngredient,
+  deleteIngredient,
+  clearUserOrder
+} = shopSlice.actions;
 export default shopSlice.reducer;

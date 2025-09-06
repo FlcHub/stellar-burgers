@@ -19,15 +19,9 @@ export const ProfileOrders: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const tim = setInterval(() => {
-      if (!isUserLoading) {
-        dispatch(getUserOrders());
-      }
-    }, 1000);
-
-    return () => {
-      clearInterval(tim);
-    };
+    if (!isUserLoading) {
+      dispatch(getUserOrders());
+    }
   }, [isUserLoading]);
 
   return <ProfileOrdersUI orders={orders} />;

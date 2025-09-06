@@ -1,39 +1,41 @@
 import { FC, useEffect } from 'react';
 
 import React from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
 
-import { useDispatch, useSelector } from '../../services/store';
+import { useSelector } from '../../services/store';
 import {
   getIsLoginedSelector,
-  getOnLoadFlagsSelector,
-  getPreviousLocationSelector,
-  setPreviousPath
+  getOnLoadFlagsSelector
 } from '../../services/shopSlice';
 import { Preloader } from '@ui';
 
-type TT = {
-  pathname: string;
+type TProps = {
+  anonymous: boolean;
 };
 
-export const ProtectedRoute: FC<TT> = ({ pathname }) => {
-  const dispatch = useDispatch();
+export const ProtectedRoute: FC<TProps> = ({ anonymous = false }) => {
   const isLogined = useSelector(getIsLoginedSelector);
   const isLoginInProgress = useSelector(getOnLoadFlagsSelector).login;
   const isUserInProgress = useSelector(getOnLoadFlagsSelector).user;
-  const path = useSelector(getPreviousLocationSelector);
 
-  useEffect(() => {
-    let prevPath = pathname || '/';
-    dispatch(setPreviousPath(prevPath));
-  }, [dispatch, path, pathname]);
-
-  if (isLoginInProgress || isUserInProgress) {
-    return <Preloader />;
+  const location = useLocation();
+  const from = location.state?.from || '/';
+  // Если разрешен неавторизованный доступ, а пользователь авторизован...
+  if (anonymous && isLogined) {
+    // ...то отправляем его на предыдущую страницу
+    return <Navigate to={from} />;
   }
 
-  if (!isLogined) {
-    return <Navigate replace to='/login' />;
+  // Если требуется авторизация, а пользователь не авторизован...
+  if (!anonymous && !isLogined) {
+    // ...то отправляем его на страницу логин
+    return <Navigate to='/login' state={{ from: location }} />;
+  }
+
+  // Чтобы не мелькали страницы Login, Register..., если пользователь авторизован
+  if (isLoginInProgress || isUserInProgress) {
+    return <Preloader />;
   }
 
   return <Outlet />;

@@ -23,16 +23,9 @@ export const Feed: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const tim = setInterval(() => {
-      if (!isOrdersLoading) {
-        dispatch(fetchFeeds());
-      }
-    }, 1000);
-
-    return () => {
-      console.log('clear');
-      clearInterval(tim);
-    };
+    if (!isOrdersLoading) {
+      dispatch(fetchFeeds());
+    }
   }, [isOrdersLoading]);
 
   if (!orders.length) {

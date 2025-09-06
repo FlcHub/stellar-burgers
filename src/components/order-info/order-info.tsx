@@ -1,20 +1,44 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
-import { useSelector } from '../../services/store';
+import { TIngredient, TOrder } from '@utils-types';
+import { useDispatch, useSelector } from '../../services/store';
 import {
+  fetchFeeds,
+  fetchIngredients,
   getIngredientsSelector,
-  getOrdersDataSelector
+  getOrdersDataSelector,
+  getUserOrders,
+  getUserOrdersDataSelector
 } from '../../services/shopSlice';
 import { useParams } from 'react-router-dom';
 
+const findOrder = (
+  recentOrders: TOrder[],
+  userOrders: TOrder[],
+  orderNumber: number
+): TOrder | undefined => {
+  let orderData = recentOrders.find((el) => el.number === orderNumber);
+  if (!orderData) {
+    orderData = userOrders.find((el) => el.number === orderNumber);
+  }
+  return orderData;
+};
+
 export const OrderInfo: FC = () => {
-  const orders = useSelector(getOrdersDataSelector).orders;
-  const num = Number(useParams().number);
-  const orderData = orders.find((el) => el.number === num);
+  const dispatch = useDispatch();
+  const recentOrders = useSelector(getOrdersDataSelector).orders;
+  const userOrders = useSelector(getUserOrdersDataSelector);
+  const orderNumber = Number(useParams().number);
+  const orderData = findOrder(recentOrders, userOrders, orderNumber);
 
   const ingredients = useSelector(getIngredientsSelector);
+
+  useEffect(() => {
+    dispatch(fetchIngredients());
+    dispatch(fetchFeeds());
+    dispatch(getUserOrders());
+  }, [dispatch]);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {

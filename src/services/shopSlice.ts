@@ -56,7 +56,6 @@ interface ShopState {
   isLogined: boolean;
   constructorItems: TConstructorItems;
   user: TUser | null;
-  previousPath: string | null;
 }
 
 const initialState: ShopState = {
@@ -83,8 +82,7 @@ const initialState: ShopState = {
     bun: null,
     ingredients: []
   },
-  user: null,
-  previousPath: null
+  user: null
 };
 
 export const fetchIngredients = createAsyncThunk(
@@ -155,9 +153,6 @@ const shopSlice = createSlice({
     clearUserOrder(state) {
       state.userNewOrder.request = false;
       state.userNewOrder.order = null;
-    },
-    setPreviousPath(state, action: PayloadAction<string | null>) {
-      state.previousPath = action.payload;
     }
   },
   selectors: {
@@ -168,8 +163,7 @@ const shopSlice = createSlice({
     getIngredientsSelector: (state) => state.ingredients,
     getOnLoadFlagsSelector: (state) => state.onLoad,
     getUserSelector: (state) => state.user,
-    getIsLoginedSelector: (state) => state.isLogined,
-    getPreviousLocationSelector: (state) => state.previousPath
+    getIsLoginedSelector: (state) => state.isLogined
   },
   extraReducers: (builder) => {
     builder
@@ -292,15 +286,13 @@ export const {
   getConstructorItemsSelector,
   getOrderRequestSelector,
   getUserSelector,
-  getIsLoginedSelector,
-  getPreviousLocationSelector
+  getIsLoginedSelector
 } = shopSlice.selectors;
 
 export const {
   addIngredient,
   moveIngredient,
   deleteIngredient,
-  clearUserOrder,
-  setPreviousPath
+  clearUserOrder
 } = shopSlice.actions;
 export default shopSlice.reducer;

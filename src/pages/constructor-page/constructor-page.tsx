@@ -1,8 +1,7 @@
 import { useDispatch, useSelector } from '../../services/store';
 import {
   fetchIngredients,
-  getOnLoadFlagsSelector,
-  setPreviousPath
+  getOnLoadFlagsSelector
 } from '../../services/shopSlice';
 
 import styles from './constructor-page.module.css';
@@ -15,7 +14,6 @@ import { FC, useEffect } from 'react';
 export const ConstructorPage: FC = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(setPreviousPath('/'));
     dispatch(fetchIngredients());
   }, [dispatch]);
 

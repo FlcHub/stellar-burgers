@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from '../../services/store';
 import {
+  fetchIngredients,
   getOnLoadFlagsSelector,
   setPreviousPath
 } from '../../services/shopSlice';
@@ -15,6 +16,7 @@ export const ConstructorPage: FC = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setPreviousPath('/'));
+    dispatch(fetchIngredients());
   }, [dispatch]);
 
   const isIngredientsLoading = useSelector(getOnLoadFlagsSelector).ingredients;

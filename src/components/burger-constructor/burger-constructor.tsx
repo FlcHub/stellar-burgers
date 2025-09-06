@@ -23,7 +23,7 @@ export const BurgerConstructor: FC = () => {
     // проверить, залогинен ли пользователь
     if (!user) {
       // перенаправить на страницу регистрации
-      navigate('/login');
+      return navigate('/login');
     }
 
     // нет булки - нет бургера

@@ -89,44 +89,33 @@ const initialState: ShopState = {
 
 export const fetchIngredients = createAsyncThunk(
   'shop/getIngredients',
-  async () => getIngredientsApi()
+  getIngredientsApi
 );
 
-export const fetchFeeds = createAsyncThunk('shop/getFeeds', async () =>
-  getFeedsApi()
+export const fetchFeeds = createAsyncThunk('shop/getFeeds', getFeedsApi);
+
+export const getUserOrders = createAsyncThunk(
+  'shop/getUserOrders',
+  getOrdersApi
 );
 
-export const getUserOrders = createAsyncThunk('shop/getUserOrders', async () =>
-  getOrdersApi()
-);
-
-export const orderBurger = createAsyncThunk(
-  'shop/orderBurger',
-  async (items: string[]) => orderBurgerApi(items)
-);
+export const orderBurger = createAsyncThunk('shop/orderBurger', orderBurgerApi);
 
 export const registerUserThunk = createAsyncThunk(
   'users/registerUser',
-  async (data: TRegisterData) => registerUserApi(data)
+  registerUserApi
 );
 
-export const loginUserThunk = createAsyncThunk(
-  'users/loginUser',
-  async (data: TLoginData) => loginUserApi(data)
-);
+export const loginUserThunk = createAsyncThunk('users/loginUser', loginUserApi);
 
-export const logoutThunk = createAsyncThunk('users/logout', async () =>
-  logoutApi()
-);
+export const logoutThunk = createAsyncThunk('users/logout', logoutApi);
 
 export const updateUserThunk = createAsyncThunk(
   'users/updateUser',
-  async (user: Partial<TRegisterData>) => updateUserApi(user)
+  updateUserApi
 );
 
-export const getUserThunk = createAsyncThunk('users/getUser', async () =>
-  getUserApi()
-);
+export const getUserThunk = createAsyncThunk('users/getUser', getUserApi);
 
 const swap = (list: TConstructorIngredient[], ind1: number, ind2: number) => {
   const temp = list[ind1];

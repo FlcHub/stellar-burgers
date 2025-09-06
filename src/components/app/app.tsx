@@ -22,15 +22,8 @@ import {
   IngredientDetails
 } from '@components';
 
-import { useDispatch, useSelector } from '../../services/store';
-import {
-  fetchFeeds,
-  fetchIngredients,
-  getUserThunk,
-  getIsLoginedSelector,
-  getUserOrders,
-  getOnLoadFlagsSelector
-} from '../../services/shopSlice';
+import { useDispatch } from '../../services/store';
+import { getUserThunk } from '../../services/shopSlice';
 import { useEffect } from 'react';
 
 const App = () => {
@@ -38,38 +31,8 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchIngredients());
     dispatch(getUserThunk());
-    dispatch(getUserOrders());
   }, [dispatch]);
-
-  const isLogined = useSelector(getIsLoginedSelector);
-  const isOrdersLoading = useSelector(getOnLoadFlagsSelector).odersData;
-  const isUserLoading = useSelector(getOnLoadFlagsSelector).userOders;
-
-  useEffect(() => {
-    const tim = setInterval(() => {
-      if (!isOrdersLoading) {
-        dispatch(fetchFeeds());
-      }
-    }, 2000);
-
-    return () => {
-      clearInterval(tim);
-    };
-  }, [isOrdersLoading]);
-
-  useEffect(() => {
-    const tim = setInterval(() => {
-      if (isLogined && !isUserLoading) {
-        dispatch(getUserOrders());
-      }
-    }, 2000);
-
-    return () => {
-      clearInterval(tim);
-    };
-  }, [isLogined, isUserLoading]);
 
   const handleOnClose = () => {
     navigate(-1);

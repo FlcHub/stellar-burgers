@@ -1,14 +1,11 @@
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient, TOrder } from '@utils-types';
-import { useDispatch, useSelector } from '../../services/store';
+import { useSelector } from '../../services/store';
 import {
-  fetchFeeds,
-  fetchIngredients,
   getIngredientsSelector,
   getOrdersDataSelector,
-  getUserOrders,
   getUserOrdersDataSelector
 } from '../../services/shopSlice';
 import { useParams } from 'react-router-dom';
@@ -26,19 +23,12 @@ const findOrder = (
 };
 
 export const OrderInfo: FC = () => {
-  const dispatch = useDispatch();
   const recentOrders = useSelector(getOrdersDataSelector).orders;
   const userOrders = useSelector(getUserOrdersDataSelector);
   const orderNumber = Number(useParams().number);
   const orderData = findOrder(recentOrders, userOrders, orderNumber);
 
   const ingredients = useSelector(getIngredientsSelector);
-
-  useEffect(() => {
-    dispatch(fetchIngredients());
-    dispatch(fetchFeeds());
-    dispatch(getUserOrders());
-  }, [dispatch]);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {

@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from '../../services/store';
 import {
   fetchFeeds,
-  fetchIngredients,
   getOnLoadFlagsSelector,
   getOrdersDataSelector
 } from '../../services/shopSlice';
@@ -17,10 +16,6 @@ export const Feed: FC = () => {
 
   const ordersData: TOrdersData = useSelector(getOrdersDataSelector);
   const orders: TOrder[] = ordersData.orders;
-
-  useEffect(() => {
-    dispatch(fetchIngredients());
-  }, [dispatch]);
 
   useEffect(() => {
     if (!isOrdersLoading) {

@@ -22,7 +22,7 @@ import {
 } from '@components';
 
 import { useDispatch } from '../../services/store';
-import { getUserThunk } from '../../services/shopSlice';
+import { fetchIngredients, getUserThunk } from '../../services/shopSlice';
 import { useEffect } from 'react';
 
 const App = () => {
@@ -30,6 +30,7 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(fetchIngredients());
     dispatch(getUserThunk());
   }, [dispatch]);
 

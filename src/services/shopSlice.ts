@@ -13,8 +13,6 @@ import {
   logoutApi,
   orderBurgerApi,
   registerUserApi,
-  TLoginData,
-  TRegisterData,
   updateUserApi
 } from '@api';
 

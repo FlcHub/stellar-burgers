@@ -3,7 +3,6 @@ import { FC, useEffect } from 'react';
 
 import { useDispatch, useSelector } from '../../services/store';
 import {
-  fetchIngredients,
   getOnLoadFlagsSelector,
   getUserOrders,
   getUserOrdersDataSelector
@@ -13,10 +12,6 @@ export const ProfileOrders: FC = () => {
   const dispatch = useDispatch();
   const orders = useSelector(getUserOrdersDataSelector);
   const isUserLoading = useSelector(getOnLoadFlagsSelector).userOders;
-
-  useEffect(() => {
-    dispatch(fetchIngredients());
-  }, [dispatch]);
 
   useEffect(() => {
     if (!isUserLoading) {

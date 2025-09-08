@@ -7,6 +7,7 @@ import { deleteCookie, setCookie } from '../utils/cookie';
 import {
   getFeedsApi,
   getIngredientsApi,
+  getOrderByNumberApi,
   getOrdersApi,
   getUserApi,
   loginUserApi,
@@ -42,12 +43,14 @@ type TNewOrder = {
 interface ShopState {
   userNewOrder: TNewOrder;
   userOrdersData: TOrder[];
+  orderByNumberData: TOrder[];
   ordersData: TOrdersData;
   ingredients: TIngredient[];
   onLoad: {
     ingredients: boolean;
     odersData: boolean;
     userOders: boolean;
+    orderByNumber: boolean;
     user: boolean;
     login: boolean;
   };
@@ -67,11 +70,13 @@ const initialState: ShopState = {
     request: false
   },
   userOrdersData: [],
+  orderByNumberData: [],
   ingredients: [],
   onLoad: {
     ingredients: true,
     odersData: false,
     userOders: false,
+    orderByNumber: true,
     user: true,
     login: false
   },
@@ -93,6 +98,11 @@ export const fetchFeeds = createAsyncThunk('shop/getFeeds', getFeedsApi);
 export const getUserOrders = createAsyncThunk(
   'shop/getUserOrders',
   getOrdersApi
+);
+
+export const getOrderByNumber = createAsyncThunk(
+  'shop/getOrderByNumber',
+  getOrderByNumberApi
 );
 
 export const orderBurger = createAsyncThunk('shop/orderBurger', orderBurgerApi);
@@ -148,9 +158,11 @@ const shopSlice = createSlice({
           (el, index) => index !== action.payload
         );
     },
-    clearUserOrder(state) {
+    clearOrder(state) {
       state.userNewOrder.request = false;
       state.userNewOrder.order = null;
+      state.constructorItems.bun = null;
+      state.constructorItems.ingredients = [];
     }
   },
   selectors: {
@@ -161,7 +173,8 @@ const shopSlice = createSlice({
     getIngredientsSelector: (state) => state.ingredients,
     getOnLoadFlagsSelector: (state) => state.onLoad,
     getUserSelector: (state) => state.user,
-    getIsLoginedSelector: (state) => state.isLogined
+    getIsLoginedSelector: (state) => state.isLogined,
+    getOrderByNumberDataSelector: (state) => state.orderByNumberData
   },
   extraReducers: (builder) => {
     builder
@@ -198,6 +211,17 @@ const shopSlice = createSlice({
       .addCase(getUserOrders.fulfilled, (state, action) => {
         state.userOrdersData = action.payload;
         state.onLoad.userOders = false;
+      })
+      //getOrderByNumber
+      .addCase(getOrderByNumber.pending, (state) => {
+        state.onLoad.orderByNumber = true;
+      })
+      .addCase(getOrderByNumber.rejected, (state) => {
+        state.onLoad.orderByNumber = false;
+      })
+      .addCase(getOrderByNumber.fulfilled, (state, action) => {
+        state.orderByNumberData = action.payload.orders;
+        state.onLoad.orderByNumber = false;
       })
       //orderBurger
       .addCase(orderBurger.pending, (state) => {
@@ -284,13 +308,10 @@ export const {
   getConstructorItemsSelector,
   getOrderRequestSelector,
   getUserSelector,
-  getIsLoginedSelector
+  getIsLoginedSelector,
+  getOrderByNumberDataSelector
 } = shopSlice.selectors;
 
-export const {
-  addIngredient,
-  moveIngredient,
-  deleteIngredient,
-  clearUserOrder
-} = shopSlice.actions;
+export const { addIngredient, moveIngredient, deleteIngredient, clearOrder } =
+  shopSlice.actions;
 export default shopSlice.reducer;

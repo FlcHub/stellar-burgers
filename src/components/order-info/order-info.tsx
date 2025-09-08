@@ -1,33 +1,28 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient, TOrder } from '@utils-types';
-import { useSelector } from '../../services/store';
+import { TIngredient } from '@utils-types';
+import { useSelector, useDispatch } from '../../services/store';
 import {
   getIngredientsSelector,
-  getOrdersDataSelector,
-  getUserOrdersDataSelector
+  getOnLoadFlagsSelector,
+  getOrderByNumber,
+  getOrderByNumberDataSelector
 } from '../../services/shopSlice';
 import { useParams } from 'react-router-dom';
-
-const findOrder = (
-  recentOrders: TOrder[],
-  userOrders: TOrder[],
-  orderNumber: number
-): TOrder | undefined => {
-  let orderData = recentOrders.find((el) => el.number === orderNumber);
-  if (!orderData) {
-    orderData = userOrders.find((el) => el.number === orderNumber);
-  }
-  return orderData;
-};
+import { TextUI } from '@ui';
 
 export const OrderInfo: FC = () => {
-  const recentOrders = useSelector(getOrdersDataSelector).orders;
-  const userOrders = useSelector(getUserOrdersDataSelector);
+  const dispatch = useDispatch();
+  const isLoading = useSelector(getOnLoadFlagsSelector).orderByNumber;
+  const orderByNumberData = useSelector(getOrderByNumberDataSelector);
   const orderNumber = Number(useParams().number);
-  const orderData = findOrder(recentOrders, userOrders, orderNumber);
 
+  useEffect(() => {
+    dispatch(getOrderByNumber(orderNumber));
+  }, [orderNumber]);
+
+  const orderData = orderByNumberData[0];
   const ingredients = useSelector(getIngredientsSelector);
 
   /* Готовим данные для отображения */
@@ -71,6 +66,11 @@ export const OrderInfo: FC = () => {
       total
     };
   }, [orderData, ingredients]);
+
+  // ошибка загрузки бургера
+  if (!orderInfo && !isLoading) {
+    return <TextUI>{'Возможно, такого заказа не существует...'}</TextUI>;
+  }
 
   if (!orderInfo) {
     return <Preloader />;

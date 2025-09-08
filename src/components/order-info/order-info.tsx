@@ -1,21 +1,29 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
+import { useSelector, useDispatch } from '../../services/store';
+import {
+  getIngredientsSelector,
+  getOnLoadFlagsSelector,
+  getOrderByNumber,
+  getOrderByNumberDataSelector
+} from '../../services/shopSlice';
+import { useParams } from 'react-router-dom';
+import { TextUI } from '@ui';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  const dispatch = useDispatch();
+  const isLoading = useSelector(getOnLoadFlagsSelector).orderByNumber;
+  const orderByNumberData = useSelector(getOrderByNumberDataSelector);
+  const orderNumber = Number(useParams().number);
 
-  const ingredients: TIngredient[] = [];
+  useEffect(() => {
+    dispatch(getOrderByNumber(orderNumber));
+  }, [orderNumber]);
+
+  const orderData = orderByNumberData[0];
+  const ingredients = useSelector(getIngredientsSelector);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
@@ -58,6 +66,11 @@ export const OrderInfo: FC = () => {
       total
     };
   }, [orderData, ingredients]);
+
+  // ошибка загрузки бургера
+  if (!orderInfo && !isLoading) {
+    return <TextUI>{'Возможно, такого заказа не существует...'}</TextUI>;
+  }
 
   if (!orderInfo) {
     return <Preloader />;

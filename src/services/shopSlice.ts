@@ -53,13 +53,26 @@ interface ShopState {
     orderByNumber: boolean;
     user: boolean;
     login: boolean;
+    logout: boolean;
+    updateUser: boolean;
+  };
+  errors: {
+    ingredients: string | null;
+    odersData: string | null;
+    userOders: string | null;
+    orderByNumber: string | null;
+    user: string | null;
+    login: string | null;
+    logout: string | null;
+    order: string | null;
+    updateUser: string | null;
   };
   isLogined: boolean;
   constructorItems: TConstructorItems;
   user: TUser | null;
 }
 
-const initialState: ShopState = {
+export const initialState: ShopState = {
   ordersData: {
     orders: [],
     total: 0,
@@ -78,7 +91,20 @@ const initialState: ShopState = {
     userOders: false,
     orderByNumber: true,
     user: true,
-    login: false
+    login: false,
+    logout: false,
+    updateUser: false
+  },
+  errors: {
+    ingredients: null,
+    odersData: null,
+    userOders: null,
+    orderByNumber: null,
+    user: null,
+    login: null,
+    order: null,
+    logout: null,
+    updateUser: null
   },
   isLogined: false,
   constructorItems: {
@@ -182,8 +208,10 @@ const shopSlice = createSlice({
       .addCase(fetchIngredients.pending, (state) => {
         state.onLoad.ingredients = true;
       })
-      .addCase(fetchIngredients.rejected, (state) => {
+      .addCase(fetchIngredients.rejected, (state, action) => {
         state.onLoad.ingredients = false;
+        state.errors.ingredients =
+          action.error.message ?? 'Не удалось выполнить запрос';
       })
       .addCase(fetchIngredients.fulfilled, (state, action) => {
         state.onLoad.ingredients = false;
@@ -193,8 +221,10 @@ const shopSlice = createSlice({
       .addCase(fetchFeeds.pending, (state) => {
         state.onLoad.odersData = true;
       })
-      .addCase(fetchFeeds.rejected, (state) => {
+      .addCase(fetchFeeds.rejected, (state, action) => {
         state.onLoad.odersData = false;
+        state.errors.odersData =
+          action.error.message ?? 'Не удалось выполнить запрос';
       })
       .addCase(fetchFeeds.fulfilled, (state, action) => {
         state.onLoad.odersData = false;
@@ -204,9 +234,11 @@ const shopSlice = createSlice({
       .addCase(getUserOrders.pending, (state) => {
         state.onLoad.userOders = true;
       })
-      .addCase(getUserOrders.rejected, (state) => {
+      .addCase(getUserOrders.rejected, (state, action) => {
         state.onLoad.userOders = false;
         state.isLogined = false;
+        state.errors.userOders =
+          action.error.message ?? 'Не удалось выполнить запрос';
       })
       .addCase(getUserOrders.fulfilled, (state, action) => {
         state.userOrdersData = action.payload;
@@ -216,8 +248,10 @@ const shopSlice = createSlice({
       .addCase(getOrderByNumber.pending, (state) => {
         state.onLoad.orderByNumber = true;
       })
-      .addCase(getOrderByNumber.rejected, (state) => {
+      .addCase(getOrderByNumber.rejected, (state, action) => {
         state.onLoad.orderByNumber = false;
+        state.errors.orderByNumber =
+          action.error.message ?? 'Не удалось выполнить запрос';
       })
       .addCase(getOrderByNumber.fulfilled, (state, action) => {
         state.orderByNumberData = action.payload.orders;
@@ -227,8 +261,10 @@ const shopSlice = createSlice({
       .addCase(orderBurger.pending, (state) => {
         state.userNewOrder.request = true;
       })
-      .addCase(orderBurger.rejected, (state) => {
+      .addCase(orderBurger.rejected, (state, action) => {
         state.userNewOrder.request = false;
+        state.errors.order =
+          action.error.message ?? 'Не удалось выполнить запрос';
       })
       .addCase(orderBurger.fulfilled, (state, action) => {
         state.userNewOrder.request = false;
@@ -238,9 +274,11 @@ const shopSlice = createSlice({
       .addCase(registerUserThunk.pending, (state) => {
         state.onLoad.login = true;
       })
-      .addCase(registerUserThunk.rejected, (state) => {
+      .addCase(registerUserThunk.rejected, (state, action) => {
         state.isLogined = false;
         state.onLoad.login = false;
+        state.errors.login =
+          action.error.message ?? 'Не удалось выполнить запрос';
       })
       .addCase(registerUserThunk.fulfilled, (state, action) => {
         setCookie('accessToken', action.payload.accessToken);
@@ -253,9 +291,11 @@ const shopSlice = createSlice({
       .addCase(loginUserThunk.pending, (state) => {
         state.onLoad.login = true;
       })
-      .addCase(loginUserThunk.rejected, (state) => {
+      .addCase(loginUserThunk.rejected, (state, action) => {
         state.isLogined = false;
         state.onLoad.login = false;
+        state.errors.login =
+          action.error.message ?? 'Не удалось выполнить запрос';
       })
       .addCase(loginUserThunk.fulfilled, (state, action) => {
         setCookie('accessToken', action.payload.accessToken);
@@ -265,10 +305,14 @@ const shopSlice = createSlice({
         state.onLoad.login = false;
       })
       //updateUserThunk
-      .addCase(updateUserThunk.pending, (state) => {})
-      .addCase(updateUserThunk.rejected, (state) => {
+      .addCase(updateUserThunk.pending, (state) => {
+        state.onLoad.updateUser = true;
+      })
+      .addCase(updateUserThunk.rejected, (state, action) => {
         state.user = null;
         state.isLogined = false;
+        state.errors.updateUser =
+          action.error.message ?? 'Не удалось выполнить запрос';
       })
       .addCase(updateUserThunk.fulfilled, (state, action) => {
         state.user = action.payload.user;
@@ -278,10 +322,12 @@ const shopSlice = createSlice({
       .addCase(getUserThunk.pending, (state) => {
         state.onLoad.user = true;
       })
-      .addCase(getUserThunk.rejected, (state) => {
+      .addCase(getUserThunk.rejected, (state, action) => {
         state.user = null;
         state.onLoad.user = false;
         state.isLogined = false;
+        state.errors.user =
+          action.error.message ?? 'Не удалось выполнить запрос';
       })
       .addCase(getUserThunk.fulfilled, (state, action) => {
         state.user = action.payload.user;
@@ -289,13 +335,20 @@ const shopSlice = createSlice({
         state.isLogined = true;
       })
       //logoutThunk
-      .addCase(logoutThunk.pending, (state) => {})
-      .addCase(logoutThunk.rejected, (state) => {})
+      .addCase(logoutThunk.pending, (state) => {
+        state.onLoad.logout = true;
+      })
+      .addCase(logoutThunk.rejected, (state, action) => {
+        state.onLoad.logout = false;
+        state.errors.logout =
+          action.error.message ?? 'Не удалось выполнить запрос';
+      })
       .addCase(logoutThunk.fulfilled, (state, action) => {
         deleteCookie('accessToken');
         localStorage.removeItem('refreshToken');
         state.user = null;
         state.isLogined = false;
+        state.onLoad.logout = false;
       });
   }
 });

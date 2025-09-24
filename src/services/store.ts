@@ -7,7 +7,7 @@ import {
   useSelector as selectorHook
 } from 'react-redux';
 
-const rootReducer = shopSliceReducer; // Заменить на импорт настоящего редьюсера
+const rootReducer = shopSliceReducer;
 
 const store = configureStore({
   reducer: {

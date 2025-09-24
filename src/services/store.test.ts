@@ -1,3 +1,4 @@
+import { expect } from '@jest/globals';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import store from './store';
 import shopSliceReducer, {

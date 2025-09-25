@@ -15,10 +15,7 @@ const config: Config.InitialOptions = {
     '^.+\\.tsx?$': 'ts-jest',
     '.+\\.(css|styl|less|sass|scss)$': 'jest-css-modules-transform'
   },
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>" }),
-  globals: {
-    fetch: global.fetch,
-  }
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>" })
 };
 
 export default config;

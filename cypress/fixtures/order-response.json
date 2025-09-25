@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "order": {
+    "_id": "643d69a5c3f7b9001cfa093c",
+    "ingredients": [
+        "643d69a5c3f7b9001cfa0941",
+        "643d69a5c3f7b9001cfa093e"
+    ],
+    "owner": "68d01b9b673086001ba89204",
+    "status": "done",
+    "name": "Краторный бургер",
+    "createdAt": "2025-09-23T15:53:34.357Z",
+    "updatedAt": "2025-09-23T15:53:35.547Z",
+    "number": 1
+  }
+}

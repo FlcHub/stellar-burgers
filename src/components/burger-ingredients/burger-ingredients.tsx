@@ -8,7 +8,6 @@ import { getIngredientsSelector } from '../../services/shopSlice';
 
 export const BurgerIngredients: FC = () => {
   const ingredients = useSelector(getIngredientsSelector);
-  console.log(ingredients);
   const buns = ingredients.filter((el) => el.type === 'bun');
   const mains = ingredients.filter((el) => el.type === 'main');
   const sauces = ingredients.filter((el) => el.type === 'sauce');

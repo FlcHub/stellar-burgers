@@ -1,4 +1,8 @@
 import mockIngredients from '../fixtures/ingredients.json';
+import mockOrderResponse from '../fixtures/order-response.json';
+import mockUser from '../fixtures/user.json';
+
+import { setCookie, deleteCookie } from '../../src/utils/cookie';
 
 const URL = Cypress.env('BURGER_API_URL');
 
@@ -7,10 +11,15 @@ const find_ingredients = (type: string, ingredients: typeof mockIngredients) => 
 }
 
 describe('Конструктор бургера', function() {
-  // перехват запросов к бэкенду
+
+  // созданы моковые данные ответа на запрос данных пользователя
+  // токены авторизации
+  const accessToken = 'nsfhfsdhsfsgyfgsj';
+  const refreshToken = 'iytrehdugakldfgyf';
   
-  // перехватить GET-запрос по адресу URL/api/ingredients
+  // перехват запросов к бэкенду
   beforeEach(() => {
+    // перехватить GET-запрос по адресу URL/ingredients
     cy.intercept('GET', `${URL}/ingredients`, {
       status: 200,
       body: {
@@ -18,8 +27,79 @@ describe('Конструктор бургера', function() {
         data: mockIngredients
       }
     });
+
+    setCookie('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+
+    // перехватить GET-запрос по адресу URL/auth/user
+    cy.intercept('GET', `${URL}/auth/user`, {
+      status: 200,
+      body: {
+        success: true,
+        user: mockUser
+      }
+    });
+
+    // перехватить POST-запрос по адресу URL/orders
+    cy.intercept('POST', `${URL}/orders`, {
+      delayMs: 1000,
+      status: 200,
+      body: mockOrderResponse,
+    }).as('makeOrder');
     
     cy.visit('http://localhost:4000');
+  });
+
+  this.afterEach(() => {
+    deleteCookie('accessToken');
+    localStorage.removeItem('refreshToken');
+  });
+  
+  it('Модальное окно ингредиента: закрытие по крестику', function() {
+    const bun = find_ingredients('bun', mockIngredients)[0];
+
+    // найти картинку булки и кликнуть по ней
+    cy.get(`[data-cy="ingredient_link_${bun._id}"]`).click();
+
+    // проверить, что окно существует
+    cy.get(`[data-cy="modal_ui"]`).should('be.visible');
+
+    // закрыть по крестику и проверить, что окна больше нет
+    cy.get(`[data-cy="modal_ui_close_button"]`).click();
+    cy.get(`[data-cy="modal_ui"]`).should('not.exist');
+  });
+  
+  it('Модальное окно ингредиента: закрытие по оверлею', function() {
+    const bun = find_ingredients('bun', mockIngredients)[0];
+
+    // найти картинку булки и кликнуть по ней
+    cy.get(`[data-cy="ingredient_link_${bun._id}"]`).click();
+
+    // проверить, что окно существует
+    cy.get(`[data-cy="modal_ui"]`).should('be.visible');
+
+    // закрыть по оверлею и проверить, что окна больше нет
+    cy.get(`body`).click(10,10);
+    cy.get(`[data-cy="modal_ui"]`).should('not.exist');
+  });
+  
+  it('Модальное окно ингредиента: проверка содержимого', function() {
+    const bun = find_ingredients('bun', mockIngredients)[0];
+
+    // найти картинку булки и кликнуть по ней
+    cy.get(`[data-cy="ingredient_link_${bun._id}"]`).click();
+
+    // найти модальное окно и проверить его содержимое
+    cy.get(`[data-cy="modal_ui"]`).within(() => {
+      cy.get(`[data-cy="ingredient_img"]`).should('have.attr', 'src', bun.image_large);
+      cy.get(`[data-cy="ingredient_name"]`).contains(bun.name);
+      cy.get(`[data-cy="ingredient_calories"]`).contains(bun.calories);
+      cy.get(`[data-cy="ingredient_proteins"]`).contains(bun.proteins);
+      cy.get(`[data-cy="ingredient_fat"]`).contains(bun.fat);
+      cy.get(`[data-cy="ingredient_carbohydrates"]`).contains(bun.carbohydrates);
+    });
+    
+    cy.get(`[data-cy="modal_ui_close_button"]`).click();
   });
 
   it('Добавление ингредиентов в конструктор', function() {
@@ -30,9 +110,8 @@ describe('Конструктор бургера', function() {
     const bun = buns[0];
 
     // находим в DOM дереве кнопку с атрибутом data-cy=add_ingredient_${bun._id}
-    const button_bun = cy.get(`[data-cy="add_ingredient_${bun._id}"] button`);
-    // кликаем на кнопку, чтобы добавить булку
-    button_bun.click();
+    // и кликаем на неё
+    cy.get(`[data-cy="add_ingredient_${bun._id}"] button`).click();
 
     // проверить, добавилась ли булка и какая она
     cy.get(`[data-cy='constructor_element_up']`).within(() => {
@@ -67,5 +146,32 @@ describe('Конструктор бургера', function() {
       cy.get('.constructor-element__image').should('have.attr', 'src', sauces[0].image);
       cy.get('.constructor-element__price').contains(sauces[0].price);
     });
+  });
+  
+  it('Оформление заказа', function() {
+    const buns = find_ingredients('bun', mockIngredients);
+    const ingredients = find_ingredients('main', mockIngredients);
+    const sauces = find_ingredients('sauce', mockIngredients);
+
+    cy.get(`[data-cy="add_ingredient_${buns[0]._id}"] button`).click();
+    cy.get(`[data-cy="add_ingredient_${ingredients[0]._id}"] button`).click();
+    cy.get(`[data-cy="add_ingredient_${sauces[0]._id}"] button`).click();
+
+    // найти кнопку заказа и нажать на неё
+    cy.get(`[data-cy="constructor_element_order"] button`).click();
+
+    // проверить наличие модального окна
+    cy.get(`[data-cy="modal_ui"]`, { timeout: 2000 }).within(() => {
+      cy.get(`[data-cy="order_details_number"]`).contains(mockOrderResponse.order.number);
+    });
+    
+    // закрыть окно и проверить, что оно закрылось
+    cy.get(`[data-cy="modal_ui_close_button"]`).click();
+    cy.get(`[data-cy="modal_ui"]`).should('not.exist');
+
+    // проверить, что конструктор пуст
+    cy.get(`[data-cy='constructor_element_bun_up_empty']`).should('be.visible'); // верхней булки нет 
+    cy.get(`[data-cy='constructor_element_bun_dn_empty']`).should('be.visible'); // нижней булки нет
+    cy.get(`[data-cy="constructor_element_empty"]`).should('be.visible'); // начинки нет
   });
 });

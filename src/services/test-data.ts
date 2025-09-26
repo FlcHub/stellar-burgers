@@ -1,0 +1,264 @@
+import { TConstructorIngredient, TIngredient } from "@utils-types";
+
+export const mockIngredients: TIngredient[] = [
+  {
+    _id: '643d69a5c3f7b9001cfa0941',
+    name: 'Биокотлета из марсианской Магнолии',
+    type: 'main',
+    proteins: 420,
+    fat: 142,
+    carbohydrates: 242,
+    calories: 4242,
+    price: 424,
+    image: 'https://code.s3.yandex.net/react/code/meat-01.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png'
+  },
+  {
+    _id: '643d69a5c3f7b9001cfa093d',
+    name: 'Флюоресцентная булка R2-D3',
+    type: 'bun',
+    proteins: 44,
+    fat: 26,
+    carbohydrates: 85,
+    calories: 643,
+    price: 988,
+    image: 'https://code.s3.yandex.net/react/code/bun-01.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/bun-01-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/bun-01-large.png'
+  },
+  {
+    _id: '643d69a5c3f7b9001cfa093c',
+    name: 'Краторная булка N-200i',
+    type: 'bun',
+    proteins: 80,
+    fat: 24,
+    carbohydrates: 53,
+    calories: 420,
+    price: 1255,
+    image: 'https://code.s3.yandex.net/react/code/bun-02.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/bun-02-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png'
+  },
+  {
+    _id: '643d69a5c3f7b9001cfa0945',
+    name: 'Соус с шипами Антарианского плоскоходца',
+    type: 'sauce',
+    proteins: 101,
+    fat: 99,
+    carbohydrates: 100,
+    calories: 100,
+    price: 88,
+    image: 'https://code.s3.yandex.net/react/code/sauce-01.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/sauce-01-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/sauce-01-large.png'
+  }
+];
+
+export const ingredientsBefore: TConstructorIngredient[] = [
+  {
+    _id: '643d69a5c3f7b9001cfa0941',
+    id: '0',
+    name: 'Биокотлета из марсианской Магнолии',
+    type: 'main',
+    proteins: 420,
+    fat: 142,
+    carbohydrates: 242,
+    calories: 4242,
+    price: 424,
+    image: 'https://code.s3.yandex.net/react/code/meat-01.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png'
+  },
+  {
+    _id: '643d69a5c3f7b9001cfa0945',
+    id: '0',
+    name: 'Соус с шипами Антарианского плоскоходца',
+    type: 'sauce',
+    proteins: 101,
+    fat: 99,
+    carbohydrates: 100,
+    calories: 100,
+    price: 88,
+    image: 'https://code.s3.yandex.net/react/code/sauce-01.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/sauce-01-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/sauce-01-large.png'
+  },
+  {
+    _id: '643d69a5c3f7b9001cfa0944',
+    id: '0',
+    name: 'Соус традиционный галактический',
+    type: 'sauce',
+    proteins: 42,
+    fat: 24,
+    carbohydrates: 42,
+    calories: 99,
+    price: 15,
+    image: 'https://code.s3.yandex.net/react/code/sauce-03.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/sauce-03-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/sauce-03-large.png'
+  }
+];
+
+export const ingredientsAfterDelete: TConstructorIngredient[] = [
+  {
+    _id: '643d69a5c3f7b9001cfa0941',
+    id: '0',
+    name: 'Биокотлета из марсианской Магнолии',
+    type: 'main',
+    proteins: 420,
+    fat: 142,
+    carbohydrates: 242,
+    calories: 4242,
+    price: 424,
+    image: 'https://code.s3.yandex.net/react/code/meat-01.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png'
+  },
+  {
+    _id: '643d69a5c3f7b9001cfa0944',
+    id: '0',
+    name: 'Соус традиционный галактический',
+    type: 'sauce',
+    proteins: 42,
+    fat: 24,
+    carbohydrates: 42,
+    calories: 99,
+    price: 15,
+    image: 'https://code.s3.yandex.net/react/code/sauce-03.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/sauce-03-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/sauce-03-large.png'
+  }
+];
+
+export const ingredientsMovedAfterUp: TConstructorIngredient[] = [
+  {
+    _id: '643d69a5c3f7b9001cfa0945',
+    id: '0',
+    name: 'Соус с шипами Антарианского плоскоходца',
+    type: 'sauce',
+    proteins: 101,
+    fat: 99,
+    carbohydrates: 100,
+    calories: 100,
+    price: 88,
+    image: 'https://code.s3.yandex.net/react/code/sauce-01.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/sauce-01-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/sauce-01-large.png'
+  },
+  {
+    _id: '643d69a5c3f7b9001cfa0941',
+    id: '0',
+    name: 'Биокотлета из марсианской Магнолии',
+    type: 'main',
+    proteins: 420,
+    fat: 142,
+    carbohydrates: 242,
+    calories: 4242,
+    price: 424,
+    image: 'https://code.s3.yandex.net/react/code/meat-01.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png'
+  },
+  {
+    _id: '643d69a5c3f7b9001cfa0944',
+    id: '0',
+    name: 'Соус традиционный галактический',
+    type: 'sauce',
+    proteins: 42,
+    fat: 24,
+    carbohydrates: 42,
+    calories: 99,
+    price: 15,
+    image: 'https://code.s3.yandex.net/react/code/sauce-03.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/sauce-03-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/sauce-03-large.png'
+  }
+];
+
+export const ingredientsMovedAfterDn: TConstructorIngredient[] = [
+  {
+    _id: '643d69a5c3f7b9001cfa0941',
+    id: '0',
+    name: 'Биокотлета из марсианской Магнолии',
+    type: 'main',
+    proteins: 420,
+    fat: 142,
+    carbohydrates: 242,
+    calories: 4242,
+    price: 424,
+    image: 'https://code.s3.yandex.net/react/code/meat-01.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png'
+  },
+  {
+    _id: '643d69a5c3f7b9001cfa0944',
+    id: '0',
+    name: 'Соус традиционный галактический',
+    type: 'sauce',
+    proteins: 42,
+    fat: 24,
+    carbohydrates: 42,
+    calories: 99,
+    price: 15,
+    image: 'https://code.s3.yandex.net/react/code/sauce-03.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/sauce-03-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/sauce-03-large.png'
+  },
+  {
+    _id: '643d69a5c3f7b9001cfa0945',
+    id: '0',
+    name: 'Соус с шипами Антарианского плоскоходца',
+    type: 'sauce',
+    proteins: 101,
+    fat: 99,
+    carbohydrates: 100,
+    calories: 100,
+    price: 88,
+    image: 'https://code.s3.yandex.net/react/code/sauce-01.png',
+    image_mobile: 'https://code.s3.yandex.net/react/code/sauce-01-mobile.png',
+    image_large: 'https://code.s3.yandex.net/react/code/sauce-01-large.png'
+  }
+];
+
+export const bunIngredientOne = {
+  _id: '643d69a5c3f7b9001cfa093c',
+  name: 'Краторная булка N-200i',
+  type: 'bun',
+  proteins: 80,
+  fat: 24,
+  carbohydrates: 53,
+  calories: 420,
+  price: 1255,
+  image: 'https://code.s3.yandex.net/react/code/bun-02.png',
+  image_mobile: 'https://code.s3.yandex.net/react/code/bun-02-mobile.png',
+  image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png'
+};
+
+export const bunIngredientTwo = {
+  _id: '643d69a5c3f7b9001cfa093d',
+  name: 'Флюоресцентная булка R2-D3',
+  type: 'bun',
+  proteins: 44,
+  fat: 26,
+  carbohydrates: 85,
+  calories: 643,
+  price: 988,
+  image: 'https://code.s3.yandex.net/react/code/bun-01.png',
+  image_mobile: 'https://code.s3.yandex.net/react/code/bun-01-mobile.png',
+  image_large: 'https://code.s3.yandex.net/react/code/bun-01-large.png'
+};
+
+export const fillIngredient = {
+  _id: '643d69a5c3f7b9001cfa0945',
+  name: 'Соус с шипами Антарианского плоскоходца',
+  type: 'sauce',
+  proteins: 101,
+  fat: 99,
+  carbohydrates: 100,
+  calories: 100,
+  price: 88,
+  image: 'https://code.s3.yandex.net/react/code/sauce-01.png',
+  image_mobile: 'https://code.s3.yandex.net/react/code/sauce-01-mobile.png',
+  image_large: 'https://code.s3.yandex.net/react/code/sauce-01-large.png'
+};

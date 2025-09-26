@@ -120,6 +120,44 @@ describe('Работа редьюсера конструктора бургер�
     expect(ingredientsAfterDelete).toEqual(constructorItems.ingredients);
   });
 
+  test('Удаление ингредиента из пустого конструктора не меняет состояния', () => {
+    const { constructorItems: _, ...restState } = initialState;
+    const initialIngredientsState = {
+      constructorItems: {
+        bun: null,
+        ingredients: []
+      },
+      ...restState
+    };
+
+    // Попробовать удалить второй ингредиент
+    const newState = shopSliceReducer(
+      initialIngredientsState,
+      deleteIngredient(1)
+    );
+    const { constructorItems } = newState;
+    expect(initialIngredientsState.constructorItems.ingredients).toEqual(constructorItems.ingredients);
+  });
+
+  test('Перемещение ингредиента с некорректным индексом не меняет состояния', () => {
+    const { constructorItems: _, ...restState } = initialState;
+    const initialIngredientsState = {
+      constructorItems: {
+        bun: null,
+        ingredients: ingredientsBefore
+      },
+      ...restState
+    };
+
+    // Переместить несуществующий ингредиент вверх
+    const newState = shopSliceReducer(
+      initialIngredientsState,
+      moveIngredient({ index: ingredientsBefore.length, moveDirection: -1 })
+    );
+    const { constructorItems } = newState;
+    expect(ingredientsBefore).toEqual(constructorItems.ingredients);
+  });
+
   test('Перемещение самого вверхнего ингредиента вверх не меняет состояния конструктора', () => {
     const { constructorItems: _, ...restState } = initialState;
     const initialIngredientsState = {

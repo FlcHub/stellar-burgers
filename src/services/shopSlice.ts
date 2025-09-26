@@ -40,7 +40,7 @@ type TNewOrder = {
   request: boolean;
 };
 
-interface ShopState {
+export interface ShopState {
   userNewOrder: TNewOrder;
   userOrdersData: TOrder[];
   orderByNumberData: TOrder[];
@@ -174,6 +174,7 @@ const shopSlice = createSlice({
     moveIngredient(state, action: PayloadAction<TIngredientAction>) {
       const items = state.constructorItems.ingredients;
       const { index, moveDirection } = action.payload;
+      if (index < 0 || index >= items.length) return; // whoops :)
       if (moveDirection < 0 && index > 0) swap(items, index, index - 1);
       if (moveDirection > 0 && index < items.length - 1)
         swap(items, index, index + 1);

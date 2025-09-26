@@ -35,3 +35,19 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add('ingredientModalOpenWithCheck', (linkSelector: string, modalSelector: string) => {
+  // найти картинку булки и кликнуть по ней
+  cy.get(linkSelector).click();
+  // проверить, что окно существует
+  cy.get(modalSelector).should('be.visible');
+})
+
+Cypress.Commands.add('ingredientModalCloseWithCheck', (xSelector: string, modalSelector: string) => {
+  // найти картинку булки и кликнуть по ней
+  cy.get(xSelector).click();
+  // проверить, что окно существует
+  cy.get(modalSelector).should('not.exist');
+})
+
+export {};

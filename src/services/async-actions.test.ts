@@ -7,10 +7,12 @@ import shopSliceReducer, {
   getOrderByNumber,
   getUserOrders,
   getUserThunk,
+  initialState,
   loginUserThunk,
   logoutThunk,
   orderBurger,
   registerUserThunk,
+  ShopState,
   updateUserThunk
 } from './shopSlice';
 import { getCookie } from '../utils/cookie';
@@ -18,6 +20,14 @@ import { mockIngredients } from './test-data';
 
 describe('Проверка асинхронных экшенов', () => {
   const rejectedState = Error('Запрос отклонен');
+
+  const compareFields = <T>(state1: T, state2: T, ...exceptions: string[]) => {
+    for (const key in state1) {
+      if (!exceptions.includes(key)) {
+        expect(state1[key]).toEqual(state2[key]);
+      }
+    }
+  }
 
   describe('fetchIngredients: получение списка ингредиентов', () => {
     let mockStore: typeof store;
@@ -28,6 +38,14 @@ describe('Проверка асинхронных экшенов', () => {
           shop: shopSliceReducer
         }
       });
+    });
+
+    afterEach(() => {
+      // проверить, что состояние, на которое не должен был повлиять экшен, не изменилось
+      const shop = mockStore.getState().shop;
+      compareFields(initialState, shop, 'onLoad', 'errors', 'ingredients');
+      compareFields(initialState.onLoad, shop.onLoad, 'ingredients');
+      compareFields(initialState.errors, shop.errors, 'ingredients');
     });
 
     it('Экшен fetchIngredients.pending должен менять переменную загрузки', () => {
@@ -98,6 +116,14 @@ describe('Проверка асинхронных экшенов', () => {
       });
     });
 
+    afterEach(() => {
+      // проверить, что состояние, на которое не должен был повлиять экшен, не изменилось
+      const shop = mockStore.getState().shop;
+      compareFields(initialState, shop, 'onLoad', 'errors', 'ordersData');
+      compareFields(initialState.onLoad, shop.onLoad, 'odersData');
+      compareFields(initialState.errors, shop.errors, 'odersData');
+    });
+
     it('Экшен fetchFeeds.pending должен менять переменную загрузки', () => {
       mockStore.dispatch(fetchFeeds.pending(''));
       const isLoading = mockStore.getState().shop.onLoad.odersData;
@@ -145,6 +171,14 @@ describe('Проверка асинхронных экшенов', () => {
           shop: shopSliceReducer
         }
       });
+    });
+
+    afterEach(() => {
+      // проверить, что состояние, на которое не должен был повлиять экшен, не изменилось
+      const shop = mockStore.getState().shop;
+      compareFields(initialState, shop, 'onLoad', 'errors', 'userOrdersData');
+      compareFields(initialState.onLoad, shop.onLoad, 'userOders');
+      compareFields(initialState.errors, shop.errors, 'userOders');
     });
 
     it('Экшен getUserOrders.pending должен менять переменную загрузки', () => {
@@ -195,6 +229,14 @@ describe('Проверка асинхронных экшенов', () => {
       });
     });
 
+    afterEach(() => {
+      // проверить, что состояние, на которое не должен был повлиять экшен, не изменилось
+      const shop = mockStore.getState().shop;
+      compareFields(initialState, shop, 'onLoad', 'errors', 'orderByNumberData');
+      compareFields(initialState.onLoad, shop.onLoad, 'orderByNumber');
+      compareFields(initialState.errors, shop.errors, 'orderByNumber');
+    });
+
     it('Экшен getOrderByNumber.pending должен менять переменную загрузки', () => {
       mockStore.dispatch(getOrderByNumber.pending('', 89269));
       const isLoading = mockStore.getState().shop.onLoad.orderByNumber;
@@ -243,20 +285,27 @@ describe('Проверка асинхронных экшенов', () => {
       });
     });
 
+    afterEach(() => {
+      // проверить, что состояние, на которое не должен был повлиять экшен, не изменилось
+      const shop = mockStore.getState().shop;
+      compareFields(initialState, shop, 'errors', 'userNewOrder');
+      compareFields(initialState.errors, shop.errors, 'order');
+    });
+
     it('Экшен orderBurger.pending должен менять переменную загрузки', () => {
       mockStore.dispatch(orderBurger.pending('', mockBurger));
       const isLoading = mockStore.getState().shop.userNewOrder.request;
       expect(isLoading).toBeTruthy();
     });
 
-    it('Экшен getOrderByNumber.fulfilled должен менять переменную загрузки и заказ пользователя', () => {
+    it('Экшен orderBurger.fulfilled должен менять переменную загрузки и заказ пользователя', () => {
       mockStore.dispatch(orderBurger.fulfilled(mockResult, '', mockBurger));
       const state = mockStore.getState().shop;
       expect(state.userNewOrder.request).toBeFalsy();
       expect(state.userNewOrder.order).toEqual(mockResult.order);
     });
 
-    it('Экшен getOrderByNumber.rejected должен менять переменную загрузки и записывать ошибку', () => {
+    it('Экшен orderBurger.rejected должен менять переменную загрузки и записывать ошибку', () => {
       mockStore.dispatch(orderBurger.rejected(rejectedState, '', mockBurger));
       const state = mockStore.getState().shop;
       expect(state.userNewOrder.request).toBeFalsy();
@@ -289,6 +338,14 @@ describe('Проверка асинхронных экшенов', () => {
           shop: shopSliceReducer
         }
       });
+    });
+
+    afterEach(() => {
+      // проверить, что состояние, на которое не должен был повлиять экшен, не изменилось
+      const shop = mockStore.getState().shop;
+      compareFields(initialState, shop, 'onLoad', 'errors', 'isLogined', 'user');
+      compareFields(initialState.onLoad, shop.onLoad, 'login');
+      compareFields(initialState.errors, shop.errors, 'login');
     });
 
     it('Экшен registerUserThunk.pending должен менять переменную загрузки', () => {
@@ -352,6 +409,14 @@ describe('Проверка асинхронных экшенов', () => {
       });
     });
 
+    afterEach(() => {
+      // проверить, что состояние, на которое не должен был повлиять экшен, не изменилось
+      const shop = mockStore.getState().shop;
+      compareFields(initialState, shop, 'onLoad', 'errors', 'isLogined', 'user');
+      compareFields(initialState.onLoad, shop.onLoad, 'login');
+      compareFields(initialState.errors, shop.errors, 'login');
+    });
+
     it('Экшен loginUserThunk.pending должен менять переменную загрузки', () => {
       mockStore.dispatch(loginUserThunk.pending('', mockUser));
       const isLoading = mockStore.getState().shop.onLoad.login;
@@ -399,6 +464,14 @@ describe('Проверка асинхронных экшенов', () => {
           shop: shopSliceReducer
         }
       });
+    });
+
+    afterEach(() => {
+      // проверить, что состояние, на которое не должен был повлиять экшен, не изменилось
+      const shop = mockStore.getState().shop;
+      compareFields(initialState, shop, 'onLoad', 'errors', 'isLogined', 'user');
+      compareFields(initialState.onLoad, shop.onLoad, 'logout');
+      compareFields(initialState.errors, shop.errors, 'logout');
     });
 
     it('Экшен logoutThunk.pending должен менять переменную загрузки', () => {
@@ -456,6 +529,14 @@ describe('Проверка асинхронных экшенов', () => {
       });
     });
 
+    afterEach(() => {
+      // проверить, что состояние, на которое не должен был повлиять экшен, не изменилось
+      const shop = mockStore.getState().shop;
+      compareFields(initialState, shop, 'onLoad', 'errors', 'user', 'isLogined');
+      compareFields(initialState.onLoad, shop.onLoad, 'updateUser');
+      compareFields(initialState.errors, shop.errors, 'updateUser');
+    });
+
     it('Экшен updateUserThunk.pending должен менять переменную загрузки', () => {
       mockStore.dispatch(updateUserThunk.pending('', mockUser));
       const isLoading = mockStore.getState().shop.onLoad.updateUser;
@@ -494,6 +575,14 @@ describe('Проверка асинхронных экшенов', () => {
           shop: shopSliceReducer
         }
       });
+    });
+
+    afterEach(() => {
+      // проверить, что состояние, на которое не должен был повлиять экшен, не изменилось
+      const shop = mockStore.getState().shop;
+      compareFields(initialState, shop, 'onLoad', 'errors', 'user', 'isLogined');
+      compareFields(initialState.onLoad, shop.onLoad, 'user');
+      compareFields(initialState.errors, shop.errors, 'user');
     });
 
     it('Экшен getUserThunk.pending должен менять переменную загрузки', () => {
